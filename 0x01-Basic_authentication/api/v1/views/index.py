@@ -32,3 +32,11 @@ def request_unauthorized() -> None:
     Testing 401 error handler
     """
     abort(401)
+
+
+@app_views.route('/forbidden', methods=['GET'], strict_slashes=False)
+def request_forbidden() -> None:
+    """
+    Testing 403 error handler
+    """
+    abort(403)
