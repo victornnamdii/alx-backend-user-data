@@ -5,7 +5,8 @@ Basic Authentication class
 
 from api.v1.auth.auth import Auth
 from base64 import b64decode
-from typing import Tuple
+from typing import Tuple, TypeVar
+from models.user import User
 import binascii
 
 
@@ -49,3 +50,17 @@ class BasicAuth(Auth):
                 ':' in decoded_base64_authorization_header:
             return tuple(decoded_base64_authorization_header.split(':'))
         return (None, None)
+
+    def user_object_from_credentials(
+            self, user_email: str, user_pwd: str) -> TypeVar('User'):
+        """
+        Returns the User instance based on his email and password
+        """
+        try:
+            assert (isinstance(user_email, str) and isinstance(user_pwd, str))
+            user = User.search({'email': user_email})[0]
+            if user.is_valid_password(user_pwd):
+                return user
+        except (AssertionError, KeyError, IndexError):
+            return None
+        return None
