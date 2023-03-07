@@ -17,6 +17,9 @@ auth = None
 if getenv('AUTH_TYPE') == 'auth':
     from api.v1.auth.auth import Auth
     auth = Auth()
+elif getenv('AUTH_TYPE') == 'basic_auth':
+    from api.v1.auth.basic_auth import BasicAuth
+    auth = BasicAuth()
 
 
 @app.errorhandler(404)
@@ -47,13 +50,13 @@ def filter() -> None:
     """
     Filtering each request
     """
-    if auth is not None and Auth().require_auth(request.path,
-                                                ['/api/v1/status/',
-                                                 '/api/v1/unauthorized/',
-                                                 '/api/v1/forbidden/']):
-        if Auth().authorization_header(request) is None:
+    if auth is not None and auth.require_auth(request.path,
+                                              ['/api/v1/status/',
+                                               '/api/v1/unauthorized/',
+                                               '/api/v1/forbidden/']):
+        if auth.authorization_header(request) is None:
             abort(401)
-        if Auth().current_user(request) is None:
+        if auth.current_user(request) is None:
             abort(403)
 
 
