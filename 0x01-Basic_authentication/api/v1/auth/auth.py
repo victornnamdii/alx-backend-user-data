@@ -15,10 +15,12 @@ class Auth:
         """
         Requires auth
         """
-        if not path or not excluded_paths or not len(excluded_paths):
-            return True
-        if path in excluded_paths or path + '/' in excluded_paths:
-            return False
+        if path and excluded_paths:
+            for excluded_path in excluded_paths:
+                if '*' in excluded_path[-2:]:
+                    excluded_path = excluded_path.split('*')[0]
+                if excluded_path in path or excluded_path in path + '/':
+                    return False
         return True
 
     def authorization_header(self, request=None) -> str:
