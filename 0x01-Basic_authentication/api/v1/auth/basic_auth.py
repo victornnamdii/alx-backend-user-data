@@ -48,7 +48,14 @@ class BasicAuth(Auth):
         """
         if isinstance(decoded_base64_authorization_header, str) and\
                 ':' in decoded_base64_authorization_header:
-            return tuple(decoded_base64_authorization_header.split(':'))
+            credentials = decoded_base64_authorization_header.split(':')
+            if len(credentials) > 2:
+                for i in range(2, len(credentials)):
+                    if credentials[i] == '':
+                        credentials[1] = credentials[1] + ':'
+                        continue
+                    credentials[1] = credentials[1] + ':' + credentials[i]
+            return (credentials[0], credentials[1])
         return (None, None)
 
     def user_object_from_credentials(
