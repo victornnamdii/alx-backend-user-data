@@ -4,7 +4,7 @@ Session Authentication
 """
 
 from api.v1.views import app_views
-from flask import jsonify, request
+from flask import abort, jsonify, request
 from os import getenv
 from models.user import User
 
@@ -12,7 +12,7 @@ from models.user import User
 @app_views.route('/auth_session/login', methods=['POST'], strict_slashes=False)
 def login():
     """
-    Handles session authentication
+    Handles session authentication (login)
     """
     email = request.form.get('email', None)
     password = request.form.get('password', None)
@@ -32,3 +32,16 @@ def login():
             return jsonify({"error": "wrong password"}), 401
     except (KeyError, IndexError):
         return jsonify({"error": "no user found for this email"}), 404
+
+
+@app_views.route('/auth_session/logout', methods=['DELETE'],
+                 strict_slashes=False)
+def logout():
+    """
+    Handles session authentication (logout)
+    """
+    from api.v1.app import auth
+    deleted = auth.destroy_session(request)
+    if not deleted:
+        abort(404)
+    return jsonify({}), 200
