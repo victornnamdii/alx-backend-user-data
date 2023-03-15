@@ -5,6 +5,7 @@ Basic Flask app
 
 from flask import Flask, jsonify, request, abort
 from sqlalchemy.orm.exc import NoResultFound
+from typing import Union, Tuple
 from auth import Auth
 from db import DB
 
@@ -22,7 +23,7 @@ def home() -> str:
 
 
 @app.route('/users', methods=['POST'], strict_slashes=False)
-def users() -> str:
+def users() -> Union[str, Tuple]:
     """
     Return users
     """
