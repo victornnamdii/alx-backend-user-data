@@ -7,6 +7,7 @@ from bcrypt import hashpw, gensalt, checkpw
 from db import DB
 from user import User
 from sqlalchemy.orm.exc import NoResultFound
+from sqlalchemy.exc import InvalidRequestError
 from uuid import uuid4
 
 
@@ -48,9 +49,11 @@ class Auth:
         Validates login details
         """
         try:
+            assert (email is not None and isinstance(email, str))
+            assert (password is not None and isinstance(password, str))
             user = self._db.find_user_by(email=email)
             return checkpw(password.encode('utf-8'), user.hashed_password)
-        except Exception:
+        except (NoResultFound, InvalidRequestError, AssertionError):
             return False
 
     def create_session(self, email: str) -> str:
